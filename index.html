@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelulusan SMP IT Al-Kautsar</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background-color: #f4f9f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; color: #2d3748; }
+        .container { background: white; width: 100%; max-width: 420px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 5px solid #1b4332; position: relative; }
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h2 { color: #1b4332; margin-bottom: 5px; font-size: 22px; }
+        .header p { color: #718096; font-size: 14px; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 7px; }
+        select, input { width: 100%; padding: 12px; border: 1.5px solid #cbd5e0; border-radius: 8px; font-size: 14px; outline: none; background: #fff; }
+        select:focus, input:focus { border-color: #2d6a4f; }
+        select:disabled, input:disabled { background: #edf2f7; cursor: not-allowed; }
+        button { width: 100%; padding: 14px; background-color: #1b4332; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+        button:hover { background-color: #2d6a4f; }
+        button:disabled { background-color: #a0aec0; cursor: not-allowed; }
+        .alert { background: #fed7d7; color: #9b2c2c; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 20px; display: none; text-align: center; }
+        
+        /* Loading Screen Init */
+        #init-loading { text-align: center; color: #4a5568; font-size: 14px; display: block; margin-bottom: 15px; font-weight: 600; }
+        
+        /* Halaman Hasil */
+        #result-section { display: none; text-align: center; }
+        .student-card { background: #f8f9fa; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left; }
+        .student-card div { margin-bottom: 5px; font-size: 14px; }
+        .status-badge { padding: 15px; border-radius: 8px; font-size: 20px; font-weight: 900; color: white; margin: 20px 0; letter-spacing: 1px; }
+        .lulus { background-color: #2ec4b6; box-shadow: 0 4px 10px rgba(46,196,182,0.3); }
+        .tidak-lulus { background-color: #e63946; box-shadow: 0 4px 10px rgba(230,57,70,0.3); }
+        .keterangan-box { font-size: 13px; color: #4a5568; background: #fffdf5; padding: 12px; border-left: 4px solid #ecc94b; text-align: left; margin-bottom: 20px; display: none; border-radius: 4px; }
+        .btn-kembali { background-color: #718096; }
+        .btn-kembali:hover { background-color: #4a5568; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>SMP IT Al-Kautsar</h2>
+        <p>Portal Pengumuman Kelulusan</p>
+    </div>
+
+    <div id="login-section">
+        <div id="init-loading">🔄 Menghubungkan ke server sekolah...</div>
+        <div id="alert-msg" class="alert"></div>
+        
+        <form id="login-form" style="display: none;">
+            <div class="form-group">
+                <label>PILIH KELAS</label>
+                <select id="kelas" required>
+                    <option value="" disabled selected>-- Pilih Kelas --</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>NAMA SISWA</label>
+                <select id="nama" required disabled>
+                    <option value="" disabled selected>-- Pilih Kelas Terlebih Dahulu --</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>PASSWORD (TANGGAL LAHIR)</label>
+                <input type="password" id="password" placeholder="Contoh: 15082010" required disabled autocomplete="new-password">
+                <small style="font-size: 11px; color: #718096; display: block; margin-top: 5px;">Format: DDMMYYYY (Tanpa spasi atau strip)</small>
+            </div>
+            
+            <button type="submit" id="btn-submit" disabled>Lihat Hasil</button>
+        </form>
+    </div>
+
+    <div id="result-section">
+        <div class="student-card">
+            <div><strong>Nama:</strong> <span id="res-nama"></span></div>
+            <div><strong>Kelas:</strong> <span id="res-kelas"></span></div>
+        </div>
+        <div id="res-status" class="status-badge"></div>
+        <div id="res-keterangan" class="keterangan-box"></div>
+        <button class="btn-kembali" onclick="kembali()">Kembali Ke Awal</button>
+    </div>
+</div>
+
+<script>
+    // MASUKKAN URL GOOGLE APPS SCRIPT KAMU DI SINI
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyH3uYiwsFWP4oSkbvufejA5-yazdPwnBu46dJNcq1m5DPRwWI_puZiONgf7Yp41MTp/exec";
+    
+    let dbData = {};
+
+    // 1. Ambil data Kelas dan Nama saat website dibuka
+    window.onload = function() {
+        fetch(`${GAS_URL}?action=getData`)
+            .then(response => response.json())
+            .then(res => {
+                if(res.success) {
+                    dbData = res.data;
+                    populateKelas(dbData);
+                    document.getElementById('init-loading').style.display = 'none';
+                    document.getElementById('login-form').style.display = 'block';
+                } else {
+                    showError("Gagal memuat data dari server sekolah.");
+                }
+            })
+            .catch(err => {
+                showError("Terjadi kesalahan jaringan. Coba refresh halaman.");
+            });
+    };
+
+    function populateKelas(data) {
+        const kelasSelect = document.getElementById('kelas');
+        // Urutkan nama kelas (opsional)
+        const kelasArray = Object.keys(data).sort();
+        
+        kelasArray.forEach(kls => {
+            let option = document.createElement('option');
+            option.value = kls;
+            option.text = kls;
+            kelasSelect.appendChild(option);
+        });
+    }
+
+    // 2. Saat Kelas dipilih, munculkan Nama Siswa
+    document.getElementById('kelas').addEventListener('change', function() {
+        const selectedKelas = this.value;
+        const namaSelect = document.getElementById('nama');
+        
+        // Reset pilihan nama
+        namaSelect.innerHTML = '<option value="" disabled selected>-- Pilih Nama Siswa --</option>';
+        
+        if (dbData[selectedKelas]) {
+            dbData[selectedKelas].forEach(nm => {
+                let option = document.createElement('option');
+                option.value = nm;
+                option.text = nm;
+                namaSelect.appendChild(option);
+            });
+            namaSelect.disabled = false;
+        }
+        
+        document.getElementById('password').disabled = true;
+        document.getElementById('password').value = "";
+        document.getElementById('btn-submit').disabled = true;
+    });
+
+    // 3. Saat Nama dipilih, aktifkan form Password
+    document.getElementById('nama').addEventListener('change', function() {
+        document.getElementById('password').disabled = false;
+        document.getElementById('btn-submit').disabled = false;
+    });
+
+    // 4. Proses Submit (Cek Password ke Server)
+    document.getElementById('login-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        let kelasVal = document.getElementById('kelas').value;
+        let namaVal = document.getElementById('nama').value;
+        let passVal = document.getElementById('password').value;
+        let btnSubmit = document.getElementById('btn-submit');
+        let alertMsg = document.getElementById('alert-msg');
+        
+        btnSubmit.innerText = "Memeriksa...";
+        btnSubmit.disabled = true;
+        alertMsg.style.display = "none";
+        
+        // Memanggil API dengan action=login
+        let url = `${GAS_URL}?action=login&kelas=${encodeURIComponent(kelasVal)}&nama=${encodeURIComponent(namaVal)}&password=${encodeURIComponent(passVal)}`;
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                btnSubmit.innerText = "Lihat Hasil";
+                btnSubmit.disabled = false;
+                
+                if (data.success) {
+                    document.getElementById('login-section').style.display = "none";
+                    document.getElementById('result-section').style.display = "block";
+                    
+                    document.getElementById('res-nama').innerText = data.nama;
+                    document.getElementById('res-kelas').innerText = kelasVal;
+                    
+                    let statusBox = document.getElementById('res-status');
+                    statusBox.innerText = data.status;
+                    if (data.status.toUpperCase() === "LULUS") {
+                        statusBox.className = "status-badge lulus";
+                    } else {
+                        statusBox.className = "status-badge tidak-lulus";
+                    }
+                    
+                    let ketBox = document.getElementById('res-keterangan');
+                    if(data.keterangan !== "") {
+                        ketBox.innerText = "Catatan: " + data.keterangan;
+                        ketBox.style.display = "block";
+                    } else {
+                        ketBox.style.display = "none";
+                    }
+                } else {
+                    showError(data.message);
+                }
+            }).catch(err => {
+                btnSubmit.innerText = "Lihat Hasil";
+                btnSubmit.disabled = false;
+                showError("Gagal memeriksa password. Periksa koneksi internet.");
+            });
+    });
+
+    function showError(msg) {
+        let alertMsg = document.getElementById('alert-msg');
+        alertMsg.innerText = msg;
+        alertMsg.style.display = "block";
+        document.getElementById('init-loading').style.display = 'none';
+    }
+
+    function kembali() {
+        // Reset state
+        document.getElementById('kelas').selectedIndex = 0;
+        document.getElementById('nama').innerHTML = '<option value="" disabled selected>-- Pilih Kelas Terlebih Dahulu --</option>';
+        document.getElementById('nama').disabled = true;
+        document.getElementById('password').value = "";
+        document.getElementById('password').disabled = true;
+        document.getElementById('btn-submit').disabled = true;
+        
+        document.getElementById('result-section').style.display = "none";
+        document.getElementById('login-section').style.display = "block";
+        document.getElementById('alert-msg').style.display = "none";
+    }
+</script>
+</body>
+</html>
