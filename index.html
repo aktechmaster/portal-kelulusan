@@ -454,10 +454,14 @@
                     document.getElementById('res-kelas').innerText = kelasVal;
                     
                     let statusBox = document.getElementById('res-status');
-                    statusBox.innerText = data.status;
+                    
+                    // Hapus baris statusBox.innerText = data.status; di sini
+                    
                     if (data.status.toUpperCase() === "LULUS") {
+                        statusBox.innerText = "Selamat Anda dinyatakan Lulus"; // Teks jika lulus
                         statusBox.className = "status-badge lulus";
                     } else {
+                        statusBox.innerText = "Mohon Maaf, Anda Tidak Lulus"; // Teks jika tidak lulus
                         statusBox.className = "status-badge tidak-lulus";
                     }
                     
