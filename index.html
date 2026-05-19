@@ -3,56 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelulusan SMP IT Al-Kautsar</title>
+    <title>Pengumuman Kelulusan - SMP IT Al-Kautsar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
-        body { background-color: #f4f9f4; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; color: #2d3748; }
-        .container { background: white; width: 100%; max-width: 420px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 5px solid #1b4332; position: relative; }
-        .header { text-align: center; margin-bottom: 25px; }
-        .header h2 { color: #1b4332; margin-bottom: 5px; font-size: 22px; }
-        .header p { color: #718096; font-size: 14px; }
-        .form-group { margin-bottom: 18px; }
-        label { display: block; font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 7px; }
-        select, input { width: 100%; padding: 12px; border: 1.5px solid #cbd5e0; border-radius: 8px; font-size: 14px; outline: none; background: #fff; }
-        select:focus, input:focus { border-color: #2d6a4f; }
-        select:disabled, input:disabled { background: #edf2f7; cursor: not-allowed; }
-        button { width: 100%; padding: 14px; background-color: #1b4332; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 15px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
-        button:hover { background-color: #2d6a4f; }
-        button:disabled { background-color: #a0aec0; cursor: not-allowed; }
-        .alert { background: #fed7d7; color: #9b2c2c; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 20px; display: none; text-align: center; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { 
+            background: linear-gradient(135deg, #e0f2f1 0%, #b2dfdb 100%); 
+            display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; color: #2d3748; 
+        }
+        .container { 
+            background: rgba(255, 255, 255, 0.95); 
+            width: 100%; max-width: 450px; padding: 40px 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1); 
+            backdrop-filter: blur(10px);
+        }
+        .header { text-align: center; margin-bottom: 30px; }
         
-        /* Loading Screen Init */
-        #init-loading { text-align: center; color: #4a5568; font-size: 14px; display: block; margin-bottom: 15px; font-weight: 600; }
+        /* Tempat untuk Logo Sekolah jika ada */
+        .logo-placeholder {
+            width: 70px; height: 70px; background: #00695c; color: white;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 24px; font-weight: bold; margin: 0 auto 15px auto;
+            box-shadow: 0 4px 10px rgba(0, 105, 92, 0.3);
+        }
         
+        .header h2 { color: #004d40; margin-bottom: 5px; font-size: 22px; font-weight: 700; }
+        .header p { color: #546e7a; font-size: 14px; font-weight: 400; }
+        
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; font-size: 13px; font-weight: 600; color: #37474f; margin-bottom: 8px; }
+        select, input { 
+            width: 100%; padding: 14px; border: 1.5px solid #cfd8dc; 
+            border-radius: 10px; font-size: 14px; outline: none; background: #f8fdff; 
+            transition: all 0.3s ease;
+        }
+        select:focus, input:focus { border-color: #00796b; box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.1); }
+        select:disabled, input:disabled { background: #eceff1; cursor: not-allowed; color: #90a4ae; }
+        
+        button { 
+            width: 100%; padding: 15px; 
+            background: linear-gradient(135deg, #00796b 0%, #004d40 100%); 
+            color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 15px; 
+            cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; margin-top: 10px; 
+        }
+        button:hover:not(:disabled) { 
+            transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 77, 64, 0.3); 
+        }
+        button:disabled { background: #b0bec5; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .alert { background: #ffebee; color: #c62828; padding: 12px; border-radius: 10px; font-size: 13px; margin-bottom: 20px; display: none; text-align: center; border: 1px solid #ffcdd2; }
+        
+        #init-loading { text-align: center; color: #00796b; font-size: 14px; display: block; margin-bottom: 15px; font-weight: 500; }
+        .spinner { display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(0,121,107,0.3); border-radius: 50%; border-top-color: #00796b; animation: spin 1s ease-in-out infinite; vertical-align: middle; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
         /* Halaman Hasil */
         #result-section { display: none; text-align: center; }
-        .student-card { background: #f8f9fa; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; margin: 15px 0; text-align: left; }
-        .student-card div { margin-bottom: 5px; font-size: 14px; }
-        .status-badge { padding: 15px; border-radius: 8px; font-size: 20px; font-weight: 900; color: white; margin: 20px 0; letter-spacing: 1px; }
-        .lulus { background-color: #2ec4b6; box-shadow: 0 4px 10px rgba(46,196,182,0.3); }
-        .tidak-lulus { background-color: #e63946; box-shadow: 0 4px 10px rgba(230,57,70,0.3); }
-        .keterangan-box { font-size: 13px; color: #4a5568; background: #fffdf5; padding: 12px; border-left: 4px solid #ecc94b; text-align: left; margin-bottom: 20px; display: none; border-radius: 4px; }
-        .btn-kembali { background-color: #718096; }
-        .btn-kembali:hover { background-color: #4a5568; }
+        .student-card { background: #f1f8e9; border: 1px solid #dcedc8; padding: 20px; border-radius: 12px; margin: 15px 0; text-align: left; }
+        .student-card div { margin-bottom: 8px; font-size: 15px; color: #33691e; }
+        .student-card strong { color: #1b5e20; }
+        
+        .status-badge { padding: 15px; border-radius: 12px; font-size: 22px; font-weight: 800; color: white; margin: 25px 0; letter-spacing: 2px; text-transform: uppercase; }
+        .lulus { background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4); }
+        .tidak-lulus { background: linear-gradient(135deg, #f44336 0%, #c62828 100%); box-shadow: 0 8px 20px rgba(244, 67, 54, 0.4); }
+        
+        .keterangan-box { font-size: 13.5px; color: #5d4037; background: #fff8e1; padding: 15px; border-left: 5px solid #ffca28; text-align: left; margin-bottom: 25px; display: none; border-radius: 0 8px 8px 0; }
+        
+        .btn-kembali { background: #78909c; }
+        .btn-kembali:hover { background: #546e7a; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
+        <div class="logo-placeholder">AK</div>
         <h2>SMP IT Al-Kautsar</h2>
         <p>Portal Pengumuman Kelulusan</p>
     </div>
 
     <div id="login-section">
-        <div id="init-loading">🔄 Menghubungkan ke server sekolah...</div>
+        <div id="init-loading"><span class="spinner"></span>Menghubungkan ke database...</div>
         <div id="alert-msg" class="alert"></div>
         
         <form id="login-form" style="display: none;">
             <div class="form-group">
                 <label>PILIH KELAS</label>
                 <select id="kelas" required>
-                    <option value="" disabled selected>-- Pilih Kelas --</option>
+                    <option value="" disabled selected>-- Silakan Pilih Kelas --</option>
                 </select>
             </div>
             
@@ -66,31 +105,31 @@
             <div class="form-group">
                 <label>PASSWORD (TANGGAL LAHIR)</label>
                 <input type="password" id="password" placeholder="Contoh: 15082010" required disabled autocomplete="new-password">
-                <small style="font-size: 11px; color: #718096; display: block; margin-top: 5px;">Format: DDMMYYYY (Tanpa spasi atau strip)</small>
+                <small style="font-size: 11.5px; color: #78909c; display: block; margin-top: 6px;">Format: DDMMYYYY (Tanpa spasi/strip)</small>
             </div>
             
-            <button type="submit" id="btn-submit" disabled>Lihat Hasil</button>
+            <button type="submit" id="btn-submit" disabled>Lihat Hasil Kelulusan</button>
         </form>
     </div>
 
     <div id="result-section">
         <div class="student-card">
-            <div><strong>Nama:</strong> <span id="res-nama"></span></div>
-            <div><strong>Kelas:</strong> <span id="res-kelas"></span></div>
+            <div><strong>Nama :</strong> <span id="res-nama"></span></div>
+            <div><strong>Kelas :</strong> <span id="res-kelas"></span></div>
         </div>
         <div id="res-status" class="status-badge"></div>
         <div id="res-keterangan" class="keterangan-box"></div>
-        <button class="btn-kembali" onclick="kembali()">Kembali Ke Awal</button>
+        <button class="btn-kembali" onclick="kembali()">Cek Siswa Lain</button>
     </div>
 </div>
 
 <script>
-    // MASUKKAN URL GOOGLE APPS SCRIPT KAMU DI SINI
+    // ===== WAJIB GANTI URL DI BAWAH INI DENGAN URL APPS SCRIPT KAMU =====
     const GAS_URL = "https://script.google.com/macros/s/AKfycbyH3uYiwsFWP4oSkbvufejA5-yazdPwnBu46dJNcq1m5DPRwWI_puZiONgf7Yp41MTp/exec";
+    // ======================================================================
     
     let dbData = {};
 
-    // 1. Ambil data Kelas dan Nama saat website dibuka
     window.onload = function() {
         fetch(`${GAS_URL}?action=getData`)
             .then(response => response.json())
@@ -105,13 +144,12 @@
                 }
             })
             .catch(err => {
-                showError("Terjadi kesalahan jaringan. Coba refresh halaman.");
+                showError("Terjadi kesalahan jaringan. Pastikan akses Google Script sudah diatur ke 'Anyone'.");
             });
     };
 
     function populateKelas(data) {
         const kelasSelect = document.getElementById('kelas');
-        // Urutkan nama kelas (opsional)
         const kelasArray = Object.keys(data).sort();
         
         kelasArray.forEach(kls => {
@@ -122,12 +160,10 @@
         });
     }
 
-    // 2. Saat Kelas dipilih, munculkan Nama Siswa
     document.getElementById('kelas').addEventListener('change', function() {
         const selectedKelas = this.value;
         const namaSelect = document.getElementById('nama');
         
-        // Reset pilihan nama
         namaSelect.innerHTML = '<option value="" disabled selected>-- Pilih Nama Siswa --</option>';
         
         if (dbData[selectedKelas]) {
@@ -145,13 +181,11 @@
         document.getElementById('btn-submit').disabled = true;
     });
 
-    // 3. Saat Nama dipilih, aktifkan form Password
     document.getElementById('nama').addEventListener('change', function() {
         document.getElementById('password').disabled = false;
         document.getElementById('btn-submit').disabled = false;
     });
 
-    // 4. Proses Submit (Cek Password ke Server)
     document.getElementById('login-form').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -161,17 +195,16 @@
         let btnSubmit = document.getElementById('btn-submit');
         let alertMsg = document.getElementById('alert-msg');
         
-        btnSubmit.innerText = "Memeriksa...";
+        btnSubmit.innerHTML = '<span class="spinner" style="border-top-color:#fff;"></span>Memeriksa...';
         btnSubmit.disabled = true;
         alertMsg.style.display = "none";
         
-        // Memanggil API dengan action=login
         let url = `${GAS_URL}?action=login&kelas=${encodeURIComponent(kelasVal)}&nama=${encodeURIComponent(namaVal)}&password=${encodeURIComponent(passVal)}`;
         
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                btnSubmit.innerText = "Lihat Hasil";
+                btnSubmit.innerText = "Lihat Hasil Kelulusan";
                 btnSubmit.disabled = false;
                 
                 if (data.success) {
@@ -190,7 +223,7 @@
                     }
                     
                     let ketBox = document.getElementById('res-keterangan');
-                    if(data.keterangan !== "") {
+                    if(data.keterangan && data.keterangan.trim() !== "") {
                         ketBox.innerText = "Catatan: " + data.keterangan;
                         ketBox.style.display = "block";
                     } else {
@@ -200,7 +233,7 @@
                     showError(data.message);
                 }
             }).catch(err => {
-                btnSubmit.innerText = "Lihat Hasil";
+                btnSubmit.innerText = "Lihat Hasil Kelulusan";
                 btnSubmit.disabled = false;
                 showError("Gagal memeriksa password. Periksa koneksi internet.");
             });
@@ -214,7 +247,6 @@
     }
 
     function kembali() {
-        // Reset state
         document.getElementById('kelas').selectedIndex = 0;
         document.getElementById('nama').innerHTML = '<option value="" disabled selected>-- Pilih Kelas Terlebih Dahulu --</option>';
         document.getElementById('nama').disabled = true;
