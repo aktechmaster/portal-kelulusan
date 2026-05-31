@@ -417,8 +417,11 @@
     const GAS_URL = "https://script.google.com/macros/s/AKfycbyH3uYiwsFWP4oSkbvufejA5-yazdPwnBu46dJNcq1m5DPRwWI_puZiONgf7Yp41MTp/exec";
     
     // ===== WAKTU PEMBUKAAN PORTAL =====
-    // Format: "Bulan Tanggal, Tahun Jam:Menit:Detik" (Bahasa Inggris)
     const WAKTU_BUKA = new Date("June 2, 2026 21:00:00").getTime();
+    
+    // ===== JALUR RAHASIA ADMIN =====
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdmin = urlParams.get('admin') === 'true'; // Cek apakah ada '?admin=true' di URL
     
     let dbData = {};
     let isDataLoaded = false;
@@ -426,6 +429,12 @@
 
     // FUNGSI HITUNG MUNDUR (COUNTDOWN)
     const hitungMundur = setInterval(function() {
+        // Jika masuk sebagai admin, hentikan timer
+        if (isAdmin) {
+            clearInterval(hitungMundur);
+            return;
+        }
+
         const sekarang = new Date().getTime();
         const selisih = WAKTU_BUKA - sekarang;
 
@@ -436,11 +445,9 @@
             document.getElementById("countdown-view").style.display = "none";
             
             if (isDataLoaded) {
-                // Jika waktu habis dan data Google Sheet sudah siap -> Munculkan form
                 document.getElementById('login-form').style.display = 'block';
                 document.getElementById('init-loading').style.display = 'none';
             } else {
-                // Jika waktu habis tapi data masih loading -> Munculkan loading
                 document.getElementById('init-loading').style.display = 'block';
             }
         } else {
@@ -457,10 +464,10 @@
         }
     }, 1000);
 
-    // MENGAMBIL DATA DARI GOOGLE SHEET DI LATAR BELAKANG
+    // MENGAMBIL DATA DARI GOOGLE SHEET
     window.onload = function() {
-        // Cek kondisi awal saat halaman direfresh
-        if (new Date().getTime() >= WAKTU_BUKA) {
+        // Cek apakah waktu sudah habis ATAU login pakai jalur rahasia admin
+        if (isAdmin || new Date().getTime() >= WAKTU_BUKA) {
             isTimerDone = true;
             document.getElementById("countdown-view").style.display = "none";
             document.getElementById("init-loading").style.display = "block";
@@ -472,10 +479,9 @@
                 if(res.success) {
                     dbData = res.data;
                     populateKelas(dbData);
-                    isDataLoaded = true; // Tandai data sudah siap
+                    isDataLoaded = true; 
                     
                     if (isTimerDone) {
-                        // Jika timer sudah habis, sembunyikan loading dan buka form
                         document.getElementById('init-loading').style.display = 'none';
                         document.getElementById('login-form').style.display = 'block';
                     }
